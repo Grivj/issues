@@ -6,18 +6,37 @@ defmodule Issues.CLI do
   table of the last _n_ issues in a github project
   """
 
+  @type args :: {:help} | {String.t(), String.t(), pos_integer}
+
   @doc """
   `argv` can be -h or --help, which returns :help.
   Otherwise it is a github user name, project name, and (optionally)
   the number of entries to format.
   Return a tuple of `{ user, project, count }`, or `:help` if help was given.
   """
-  @spec run(list(String.t())) :: :help | {String.t(), String.t(), integer}
+  @spec run(list(String.t())) :: args
   def run(argv) do
-    parse_args(argv)
+    parse_args(argv) |> process
   end
 
-  @spec parse_args(list(String.t())) :: :help | {String.t(), String.t(), integer}
+  @spec process(args) :: :ok
+  def process(:help) do
+    IO.puts("Usage: issues <user> <project> [count | default: #{@default_count}]")
+    System.halt(0)
+  end
+
+  @spec process(args) :: :ok
+  def process({user, project, _count}) do
+    case Issues.GithubIssues.fetch(user, project) do
+      {:ok, issues} ->
+        IO.puts(issues)
+
+      {:error, error} ->
+        IO.puts("Error fetching issues: #{error}")
+    end
+  end
+
+  @spec parse_args(list(String.t())) :: args
   def parse_args(argv) do
     OptionParser.parse(argv, switches: [help: :boolean], aliases: [h: :help])
     |> elem(1)
