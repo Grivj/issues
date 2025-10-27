@@ -5,7 +5,7 @@ defmodule Issues.CLI.Test do
   import Issues.CLI
 
   test ":help is returned if help is given (as -h or --help)" do
-    assert parse_args(["-h", "user", "project"]) == :help
+    assert parse_args(["-h", "anything"]) == :help
     assert parse_args(["--help", "anything"]) == :help
   end
 
