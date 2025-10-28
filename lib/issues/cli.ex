@@ -31,7 +31,7 @@ defmodule Issues.CLI do
       {:ok, issues} ->
         issues
         |> Issues.GithubIssues.sort_into_descending_order()
-        |> IO.inspect()
+        |> Issues.TableFormatter.format_issues()
 
         :ok
 

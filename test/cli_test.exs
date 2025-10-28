@@ -33,8 +33,16 @@ defmodule Issues.CLI.Test do
          }}
       end)
 
-      # The function should return :ok without errors
-      assert process({"user", "project", 5}, Issues.MockHttpClient) == :ok
+      output =
+        capture_io(fn ->
+          process({"user", "project", 5}, Issues.MockHttpClient)
+        end)
+
+      # The output should contain the formatted table
+      assert output =~ "Number"
+      assert output =~ "Title"
+      assert output =~ "Test Issue"
+      assert output =~ "Total: 1 issues"
     end
 
     test "handles GitHub API error response" do
