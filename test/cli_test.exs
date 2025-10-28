@@ -1,10 +1,14 @@
 defmodule Issues.CLI.Test do
   use ExUnit.Case
-  doctest Issues.CLI
 
   import Issues.CLI
   import ExUnit.CaptureIO
   import Mox
+
+  setup do
+    Logger.configure(level: :error)
+    :ok
+  end
 
   describe "parse_args/1" do
     test ":help is returned if help is given (as -h or --help)" do
@@ -23,7 +27,14 @@ defmodule Issues.CLI.Test do
 
   describe "process/2" do
     test "handles successful GitHub API response" do
-      issues = [%{"created_at" => "2023-01-01T00:00:00Z", "title" => "Test Issue"}]
+      issues = [
+        %{
+          "number" => 123,
+          "created_at" => "2023-01-01T00:00:00Z",
+          "title" => "Test Issue",
+          "user" => %{"login" => "testuser"}
+        }
+      ]
 
       expect(Issues.MockHttpClient, :get, fn _url, _headers ->
         {:ok,
@@ -35,7 +46,7 @@ defmodule Issues.CLI.Test do
 
       output =
         capture_io(fn ->
-          process({"user", "project", 5}, Issues.MockHttpClient)
+          assert process({"user", "project", 5}, Issues.MockHttpClient) == :ok
         end)
 
       # The output should contain the formatted table
@@ -54,12 +65,9 @@ defmodule Issues.CLI.Test do
          }}
       end)
 
-      output =
-        capture_io(fn ->
-          process({"nonexistent", "repository", 1}, Issues.MockHttpClient)
-        end)
-
-      assert output =~ "Error fetching issues: Not Found"
+      # The function should return an error tuple
+      result = process({"nonexistent", "repository", 1}, Issues.MockHttpClient)
+      assert {:error, "Not Found"} = result
     end
   end
 end

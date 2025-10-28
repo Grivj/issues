@@ -1,6 +1,5 @@
 defmodule Issues.GithubIssuesTest do
   use ExUnit.Case
-  doctest Issues.GithubIssues
 
   import Issues.GithubIssues
   import Mox

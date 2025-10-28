@@ -54,7 +54,12 @@ defmodule Issues.TableFormatter do
     IO.puts("#{number} | #{title} | #{created} | #{author}")
   end
 
-  @spec truncate_string(String.t(), pos_integer()) :: String.t()
+  @spec truncate_string(String.t() | nil, pos_integer()) :: String.t()
+  defp truncate_string(nil, max_length) do
+    "N/A"
+    |> String.pad_trailing(max_length)
+  end
+
   defp truncate_string(string, max_length) when is_binary(string) do
     if String.length(string) > max_length do
       string

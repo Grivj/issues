@@ -11,10 +11,11 @@ defmodule Issues.CLI do
   @type args :: {:help} | {String.t(), String.t(), pos_integer}
 
   @doc """
+  Main entry point for the CLI application.
   `argv` can be -h or --help, which returns :help.
   Otherwise it is a github user name, project name, and (optionally)
   the number of entries to format.
-  Return a tuple of `{ user, project, count }`, or `:help` if help was given.
+  Returns `:ok` on success or `{:error, reason}` on failure.
   """
 
   @spec main(list(String.t())) :: :ok | {:error, String.t()}
@@ -22,7 +23,7 @@ defmodule Issues.CLI do
     parse_args(argv) |> process
   end
 
-  @spec process(args) :: :ok
+  @spec process(args) :: :ok | {:error, String.t()}
   def process({user, project, count}) do
     process({user, project, count}, Issues.HttpClientImpl)
   end

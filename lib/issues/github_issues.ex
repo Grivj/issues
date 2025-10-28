@@ -30,15 +30,21 @@ defmodule Issues.GithubIssues do
     case Poison.decode(body) do
       {:ok, decoded_body} ->
         error_message = decoded_body["message"] || "HTTP #{status_code}"
+        Logger.error("Error: #{error_message}")
         {:error, error_message}
 
       {:error, _} ->
-        Logger.error("Error: HTTP #{status_code}: #{body}")
-        {:error, "HTTP #{status_code}: #{body}"}
+        error_message = "HTTP #{status_code}: #{body}"
+        Logger.error("Error: #{error_message}")
+        {:error, error_message}
     end
   end
 
-  def handle_response({:error, error}), do: {:error, Logger.error("Error: #{inspect(error)}")}
+  def handle_response({:error, error}) do
+    error_message = "Error: #{inspect(error)}"
+    Logger.error(error_message)
+    {:error, error_message}
+  end
 
   @spec sort_into_descending_order(list(map)) :: list(map)
   def sort_into_descending_order(issues) do
