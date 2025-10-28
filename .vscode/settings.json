@@ -2,6 +2,7 @@
   "conventionalCommits.scopes": [
     "cli",
     "deps",
-    "github"
+    "github",
+    "table_formatter"
   ]
 }

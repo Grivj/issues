@@ -15,8 +15,8 @@ defmodule Issues.CLI do
   Return a tuple of `{ user, project, count }`, or `:help` if help was given.
   """
 
-  @spec run(list(String.t())) :: :ok | {:error, String.t()}
-  def run(argv) do
+  @spec main(list(String.t())) :: :ok | {:error, String.t()}
+  def main(argv) do
     parse_args(argv) |> process
   end
 
