@@ -6,6 +6,8 @@ defmodule Issues.CLI do
   table of the last _n_ issues in a github project
   """
 
+  require Logger
+
   @type args :: {:help} | {String.t(), String.t(), pos_integer}
 
   @doc """
@@ -25,7 +27,7 @@ defmodule Issues.CLI do
     process({user, project, count}, Issues.HttpClientImpl)
   end
 
-  @spec process(args, module()) :: :ok
+  @spec process(args, module()) :: :ok | {:error, String.t()}
   def process({user, project, count}, http_client) do
     case Issues.GithubIssues.fetch(user, project, count, http_client) do
       {:ok, issues} ->
@@ -36,7 +38,8 @@ defmodule Issues.CLI do
         :ok
 
       {:error, error} ->
-        IO.puts("Error fetching issues: #{error}")
+        Logger.error("Error fetching issues: #{error}")
+        {:error, error}
     end
   end
 

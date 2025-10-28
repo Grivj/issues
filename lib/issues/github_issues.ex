@@ -3,6 +3,8 @@ defmodule Issues.GithubIssues do
   Handle the Github API requests
   """
 
+  require Logger
+
   @user_agent [{"User-agent", "Elixir issues"}]
 
   @spec fetch(String.t(), String.t(), pos_integer) :: {:ok, list(map)} | {:error, String.t()}
@@ -31,11 +33,12 @@ defmodule Issues.GithubIssues do
         {:error, error_message}
 
       {:error, _} ->
+        Logger.error("Error: HTTP #{status_code}: #{body}")
         {:error, "HTTP #{status_code}: #{body}"}
     end
   end
 
-  def handle_response({:error, error}), do: {:error, inspect(error)}
+  def handle_response({:error, error}), do: {:error, Logger.error("Error: #{inspect(error)}")}
 
   @spec sort_into_descending_order(list(map)) :: list(map)
   def sort_into_descending_order(issues) do
