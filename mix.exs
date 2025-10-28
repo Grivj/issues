@@ -8,7 +8,8 @@ defmodule Issues.MixProject do
       version: "0.1.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      source_url: "https://github.com/Grivj/issues"
     ]
   end
 
@@ -33,7 +34,9 @@ defmodule Issues.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:httpoison, "~> 2.2"},
       {:poison, "~> 6.0"},
-      {:mox, "~> 1.0", only: :test}
+      {:mox, "~> 1.0", only: :test},
+      {:ex_doc, "~> 0.39.1"},
+      {:earmark, "~> 1.4", only: :dev}
     ]
   end
 end
