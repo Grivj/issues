@@ -14,22 +14,26 @@ defmodule Issues.CLI do
   the number of entries to format.
   Return a tuple of `{ user, project, count }`, or `:help` if help was given.
   """
-  @spec run(list(String.t())) :: args
+
+  @spec run(list(String.t())) :: :ok | {:error, String.t()}
   def run(argv) do
     parse_args(argv) |> process
   end
 
   @spec process(args) :: :ok
-  def process(:help) do
-    IO.puts("Usage: issues <user> <project> [count | default: #{@default_count}]")
-    System.halt(0)
+  def process({user, project, count}) do
+    process({user, project, count}, Issues.HttpClientImpl)
   end
 
-  @spec process(args) :: :ok
-  def process({user, project, _count}) do
-    case Issues.GithubIssues.fetch(user, project) do
+  @spec process(args, module()) :: :ok
+  def process({user, project, count}, http_client) do
+    case Issues.GithubIssues.fetch(user, project, count, http_client) do
       {:ok, issues} ->
-        IO.puts(issues)
+        issues
+        |> Issues.GithubIssues.sort_into_descending_order()
+        |> IO.inspect()
+
+        :ok
 
       {:error, error} ->
         IO.puts("Error fetching issues: #{error}")
